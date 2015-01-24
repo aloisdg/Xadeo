@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Gif.Components;
 using Timer = System.Timers.Timer;
 
 namespace XadeoTest
@@ -62,6 +64,35 @@ namespace XadeoTest
         {
             //stop ticking
             _aTimer.Stop();
+            BuildGif();
+        }
+
+        private void BuildGif()
+        {
+            /* create Gif */
+            //you should replace filepath
+            var imageFilePaths = new String[30];
+            for (var i = 0; i < 15; i++)
+                imageFilePaths[i] = String.Format(@"C:\Users\alois\Pictures\Main_{0}.png", i + 1);
+
+            // reverse
+            for (var i = 0; i < 15; i++)
+            {
+                string s = String.Format(@"C:\Users\alois\Pictures\Main_{0}.png", 15 - i);
+                imageFilePaths[i + 15] = s;
+            }
+
+            const string outputFilePath = @"C:\Users\alois\Pictures\Main.gif";
+            var e = new AnimatedGifEncoder();
+            e.Start(outputFilePath);
+            e.SetDelay(200);
+            //-1:no repeat,0:always repeat
+            e.SetRepeat(0);
+            for (int i = 0, count = imageFilePaths.Length; i < count; i++)
+            {
+                e.AddFrame(System.Drawing.Image.FromFile(imageFilePaths[i]));
+            }
+            e.Finish();
         }
 
         private Timer _aTimer;
