@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Timer = System.Timers.Timer;
 
 namespace XadeoTest
 {
@@ -32,18 +34,26 @@ namespace XadeoTest
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             InitTimer();
+            _counter = 0;
+            _visual = Main;
+            _visualWidth = (int)Main.ActualWidth;
+            _visualHeight = (int)Main.ActualHeight;
         }
+
+        private Visual _visual;
+        private int _visualWidth;
+        private int _visualHeight;
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             Storyboard sb = this.FindResource("StoryboardTest") as Storyboard;
             if (sb != null)
             {
-                sb.AutoReverse = true;
                 sb.Completed += sb_Completed;
 
                 // start ticking
                 _aTimer.Start();
+                Thread.Sleep(200);
                 sb.Begin();
             }
         }
@@ -55,6 +65,7 @@ namespace XadeoTest
         }
 
         private Timer _aTimer;
+        private Int16 _counter;
 
         public void InitTimer()
         {
@@ -65,8 +76,41 @@ namespace XadeoTest
 
         void aTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Console.WriteLine(e.SignalTime);
+            //Console.WriteLine(e.SignalTime.Ticks);
+            //Console.WriteLine(e.SignalTime);
+            Console.WriteLine(_counter++);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ExportXamlAsPng(_visual, _visualWidth, _visualHeight,
+                    String.Concat(Main.Name, "_", _counter));
+            }));
         }
 
+
+        void ExportXamlAsPng(Visual visual, int width, int height, string name = "image")
+        {
+            if (String.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(name);
+
+            // The Visual to use as the source of the RenderTargetBitmap.
+            var drawingVisual = new DrawingVisual();
+            using (var drawingContext = drawingVisual.RenderOpen())
+            {
+                drawingContext.DrawRectangle(new VisualBrush(visual), null, new Rect(new Point(), new Size(width, height)));
+            }
+
+            // The BitmapSource that is rendered with a Visual.
+            // Windows operating system has set the default display "DPI" to 96 PPI
+            var render = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            render.Render(drawingVisual);
+
+            // Encoding the RenderBitmapTarget as a PNG file.
+            var png = new PngBitmapEncoder();
+            png.Frames.Add(BitmapFrame.Create(render));
+            using (var stream = new FileStream(String.Format(@"{0}\{1}.png", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), name), FileMode.Create))
+            {
+                png.Save(stream);
+            }
+        }
     }
 }

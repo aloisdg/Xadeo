@@ -3,26 +3,28 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="XadeoTest.MainWindow"
         Title="MainWindow" Height="350" Width="525">
-	<Window.Resources>
-		<Storyboard x:Key="StoryboardTest">
-			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="regularPolygon">
-				<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-				<EasingDoubleKeyFrame KeyTime="0:0:1" Value="90"/>
-			</DoubleAnimationUsingKeyFrames>
-		</Storyboard>
-	</Window.Resources>
-	<Grid>
-		<Button Content="Button" Click="ButtonBase_OnClick" HorizontalAlignment="Left" Margin="50,45.04,0,0" VerticalAlignment="Top" Width="75"/>
-		<ed:RegularPolygon x:Name="regularPolygon" Fill="#FF0D0DAA" HorizontalAlignment="Left" Height="100" InnerRadius="1" Margin="270,145,0,0" PointCount="6" Stretch="Fill" Stroke="Black" VerticalAlignment="Top" Width="100" RenderTransformOrigin="0.5,0.5">
-			<ed:RegularPolygon.RenderTransform>
-				<TransformGroup>
-					<ScaleTransform/>
-					<SkewTransform/>
-					<RotateTransform/>
-					<TranslateTransform/>
-				</TransformGroup>
-			</ed:RegularPolygon.RenderTransform>
-		</ed:RegularPolygon>
-        
-	</Grid>
+    <Window.Resources>
+        <Storyboard x:Key="StoryboardTest">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="PointCount" Storyboard.TargetName="regularPolygon">
+                <EasingDoubleKeyFrame KeyTime="0" Value="3"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="15"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
+    <Grid>
+        <Button Content="Button" Click="ButtonBase_OnClick" HorizontalAlignment="Left" Margin="50,45.04,0,0" VerticalAlignment="Top" Width="75"/>
+
+        <Grid x:Name="Main" Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200" Height="200">
+            <ed:RegularPolygon x:Name="regularPolygon" Fill="#FF0D0DAA"  Height="100" InnerRadius="1" PointCount="3" Stretch="Fill" Stroke="Transparent" Width="100" RenderTransformOrigin="0.5,0.5">
+                <ed:RegularPolygon.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform />
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </ed:RegularPolygon.RenderTransform>
+            </ed:RegularPolygon>
+        </Grid>
+    </Grid>
 </Window>
